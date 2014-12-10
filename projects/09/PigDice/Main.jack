@@ -1,0 +1,107 @@
+class Main{
+	
+	function void main(){
+		var Random random;
+		var Player user; //controlled by user
+		var Player pig; //controlled by computer
+		var int userScore; //user's score, updated every turn
+		var int pigScore; //pig's score, updated every turn
+		var char command; // store the command user enter
+		var int pigCnt;//how many times pig rolls in this turn
+		var boolean userGetZero;
+
+		//initialization
+		let random = Random.new(123);//give a seed
+		let user = Player.new();
+		let pig = Player.new();
+		let userScore = user.getScore();
+		let pigScore = pig.getScore();
+		let userGetZero = false;
+
+		do Output.printString("Dice game start!");
+		do Output.println();
+
+		while(~(userScore = 20) & ~(pigScore = 20)){
+
+			//if user rolls a 0 last turn, just start pig's turn
+			if(~userGetZero){
+				//display scores
+				do Output.printString("Your score is : ");
+				do Output.printInt(userScore);
+				do Output.printString(" Pig's score is : ");
+				do Output.printInt(pigScore);
+				do Output.println();
+				
+				//display instructions
+				do Output.printString("Hold or roll? 'h' for hold and 'r' for roll:");
+				let command = Keyboard.readChar();
+				do Output.moveCursor(0,0);
+				do Screen.clearScreen();
+			}
+
+			//hold or user gets a 0 in last turn
+			if((command = 72) | (userGetZero)){
+				
+				let pigCnt = random.randRange(5);
+				do user.changeRandom(pigCnt);
+				let userGetZero = false;
+
+				while(pigCnt > 0){
+
+					do Output.printString("Pig rolls : ");
+					do Output.printInt(pig.roll());
+					do Output.println();
+					let pigCnt = pigCnt - 1;
+
+				}
+				
+				do Output.printString("Now pig's score is : ");
+				let pigScore = pig.getScore();
+				do Output.printInt(pigScore);
+				do Output.println();
+
+			}
+
+			//roll
+			if(command = 82){
+				do Output.printString("You roll : ");
+				do Output.printInt(user.roll());
+				do Output.println();
+				do Output.printString("Now your score is : ");
+				let userScore = user.getScore();
+				do Output.printInt(userScore);
+				do Output.println();
+				do pig.changeRandom(1);
+
+				//user rolls a 0, pig should starts next turn
+				if(userScore = 0){
+					let userGetZero = true;
+					let command = 72;
+					do Output.printString("You roll a 0! Now it is pig's turn!");
+					do Output.println();
+				}
+			}
+
+		}
+
+		//see which player is the winner
+		if(~(userScore < 20)){
+			
+			do Output.printString("You win!");
+
+		}
+
+		if(~(pigScore < 20)){
+			
+			do Output.printString("Pig wins!");
+
+		}
+
+		//clear memory
+		do user.dispose();
+		do pig.dispose();
+		return;
+
+	}
+
+}

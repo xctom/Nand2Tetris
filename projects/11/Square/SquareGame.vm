@@ -1,0 +1,190 @@
+function SquareGame.new 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push constant 0
+push constant 0
+push constant 30
+call Square.new 3
+pop this 0
+push constant 0
+pop this 1
+push pointer 0
+return  
+function SquareGame.dispose 0
+push argument 0
+pop pointer 0
+push this 0
+call Square.dispose 1
+pop temp 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return  
+function SquareGame.run 2
+push argument 0
+pop pointer 0
+push constant 0
+pop local 1
+label LABEL_1 
+push local 1
+not  
+not  
+if-goto LABEL_0 
+label LABEL_3 
+push local 0
+push constant 0
+eq  
+not  
+if-goto LABEL_2 
+call Keyboard.keyPressed 0
+pop local 0
+push pointer 0
+call SquareGame.moveSquare 1
+pop temp 0
+goto LABEL_3 
+label LABEL_2 
+push local 0
+push constant 81
+eq  
+not  
+if-goto LABEL_4 
+push constant 0
+not  
+pop local 1
+goto LABEL_5 
+label LABEL_4 
+label LABEL_5 
+push local 0
+push constant 90
+eq  
+not  
+if-goto LABEL_6 
+push this 0
+call Square.decSize 1
+pop temp 0
+goto LABEL_7 
+label LABEL_6 
+label LABEL_7 
+push local 0
+push constant 88
+eq  
+not  
+if-goto LABEL_8 
+push this 0
+call Square.incSize 1
+pop temp 0
+goto LABEL_9 
+label LABEL_8 
+label LABEL_9 
+push local 0
+push constant 131
+eq  
+not  
+if-goto LABEL_10 
+push constant 1
+pop this 1
+goto LABEL_11 
+label LABEL_10 
+label LABEL_11 
+push local 0
+push constant 133
+eq  
+not  
+if-goto LABEL_12 
+push constant 2
+pop this 1
+goto LABEL_13 
+label LABEL_12 
+label LABEL_13 
+push local 0
+push constant 130
+eq  
+not  
+if-goto LABEL_14 
+push constant 3
+pop this 1
+goto LABEL_15 
+label LABEL_14 
+label LABEL_15 
+push local 0
+push constant 132
+eq  
+not  
+if-goto LABEL_16 
+push constant 4
+pop this 1
+goto LABEL_17 
+label LABEL_16 
+label LABEL_17 
+label LABEL_19 
+push local 0
+push constant 0
+eq  
+not  
+not  
+if-goto LABEL_18 
+call Keyboard.keyPressed 0
+pop local 0
+push pointer 0
+call SquareGame.moveSquare 1
+pop temp 0
+goto LABEL_19 
+label LABEL_18 
+goto LABEL_1 
+label LABEL_0 
+push constant 0
+return  
+function SquareGame.moveSquare 0
+push argument 0
+pop pointer 0
+push this 1
+push constant 1
+eq  
+not  
+if-goto LABEL_20 
+push this 0
+call Square.moveUp 1
+pop temp 0
+goto LABEL_21 
+label LABEL_20 
+label LABEL_21 
+push this 1
+push constant 2
+eq  
+not  
+if-goto LABEL_22 
+push this 0
+call Square.moveDown 1
+pop temp 0
+goto LABEL_23 
+label LABEL_22 
+label LABEL_23 
+push this 1
+push constant 3
+eq  
+not  
+if-goto LABEL_24 
+push this 0
+call Square.moveLeft 1
+pop temp 0
+goto LABEL_25 
+label LABEL_24 
+label LABEL_25 
+push this 1
+push constant 4
+eq  
+not  
+if-goto LABEL_26 
+push this 0
+call Square.moveRight 1
+pop temp 0
+goto LABEL_27 
+label LABEL_26 
+label LABEL_27 
+push constant 5
+call Sys.wait 1
+pop temp 0
+push constant 0
+return  

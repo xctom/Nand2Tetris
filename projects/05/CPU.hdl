@@ -1,0 +1,86 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/05/CPU.hdl
+
+/**
+ * The Central Processing unit (CPU).
+ * Consists of an ALU and a set of registers, designed to fetch and 
+ * execute instructions written in the Hack machine language.
+ * In particular, functions as follows:
+ * Executes the inputted instruction according to the Hack machine 
+ * language specification. The D and A in the language specification
+ * refer to CPU-resident registers, while M refers to the external
+ * memory location addressed by A, i.e. to Memory[A]. The inM input 
+ * holds the value of this location. If the current instruction needs 
+ * to write a value to M, the value is placed in outM, the address 
+ * of the target location is placed in the addressM output, and the 
+ * writeM control bit is asserted. (When writeM=0, any value may 
+ * appear in outM). The outM and writeM outputs are combinational: 
+ * they are affected instantaneously by the execution of the current 
+ * instruction. The addressM and pc outputs are clocked: although they 
+ * are affected by the execution of the current instruction, they commit 
+ * to their new values only in the next time unit. If reset=1 then the 
+ * CPU jumps to address 0 (i.e. sets pc=0 in next time unit) rather 
+ * than to the address resulting from executing the current instruction. 
+ */
+
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset=1) or continue executing
+                         // the current program (reset=0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write into M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+    Mux16(a=instruction,b=ALUout,sel=instruction[15],out=Ain);
+    
+    Not(in=instruction[15],out=notinstruction);
+
+    //RegisterA 
+    //when instruction[15] = 0, it is @value means A should load value
+    Or(a=notinstruction,b=instruction[5],out=loadA);//d1
+    ARegister(in=Ain,load=loadA,out=Aout,out[0..14]=addressM);
+
+    Mux16(a=Aout,b=inM,sel=instruction[12],out=AMout);
+
+    //Prepare for ALU, if it is not an instruction, just return D
+    And(a=instruction[11],b=instruction[15],out=zx);//c1
+    And(a=instruction[10],b=instruction[15],out=nx);//c2
+    Or(a=instruction[9],b=notinstruction,out=zy);//c3
+    Or(a=instruction[8],b=notinstruction,out=ny);//c4
+    And(a=instruction[7],b=instruction[15],out=f);//c5
+    And(a=instruction[6],b=instruction[15],out=no);//c6
+
+    ALU(x=Dout,y=AMout,zx=zx,nx=nx,zy=zy,ny=ny,f=f,no=no,out=outM,out=ALUout,zr=zero,ng=neg);
+
+    //when it is an instruction, write M 
+    And(a=instruction[15],b=instruction[3],out=writeM);//d3
+
+    //RegisterD,when it is an instruction, load D
+    And(a=instruction[15],b=instruction[4],out=loadD);//d2
+    DRegister(in=ALUout,load=loadD,out=Dout);
+
+    //Prepare for jump
+    //get positive
+    Or(a=zero,b=neg,out=notpos);
+    Not(in=notpos,out=pos);
+
+    And(a=instruction[0],b=pos,out=j3);//j3
+    And(a=instruction[1],b=zero,out=j2);//j2
+    And(a=instruction[2],b=neg,out=j1);//j1
+
+    Or(a=j1,b=j2,out=j12);
+    Or(a=j12,b=j3,out=j123);
+
+    And(a=j123,b=instruction[15],out=jump);
+
+    //when jump,load Aout 
+    PC(in=Aout,load=jump,reset=reset,inc=true,out[0..14]=pc);
+}

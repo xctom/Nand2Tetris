@@ -1,0 +1,197 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * Graphic screen library.
+ */
+class Screen {
+    static Array screen;
+    static boolean color;//true for black, false for white
+
+
+    /** Initializes the Screen. */
+    function void init() {
+        let screen = 16384;
+        let color = true;
+        return;
+    }
+
+    /** Erases the whole screen. */
+    function void clearScreen() {
+        var int i;
+        let i = 0;
+        while(i < 8192){
+            let screen[i] = false;
+        }
+        return;
+    }
+
+    /** Sets the color to be used in further draw commands
+     *  where white = false, black = true. */
+    function void setColor(boolean b) {
+        let color = b;
+        return;
+    }
+
+    /** Draws the (x, y) pixel. */
+    function void drawPixel(int x, int y) {
+        var int address,mask;
+
+        let address = (y * 32) + (x / 16);
+        let mask = Math.twoToThe(x & 15);
+
+        if(color){
+            let screen[address] = screen[address] | mask;
+        }else{
+            let screen[address] = screen[address] & ~mask;
+        }
+
+        return;
+
+    }
+
+    /** Draws a line from (x1, y1) to (x2, y2). */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+        var int dx, dy, a, b, temp, adyMinusbdx;
+
+        if(x1 > x2){
+            let temp = x1;
+            let x1 = x2;
+            let x2 = temp;
+
+            let temp = y1;
+            let y1 = y2;
+            let y2 = temp;
+        }
+
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let a = 0;
+        let b = 0;
+
+        if(dy = 0){
+
+            //draw horizontal line from x1 to x2
+            do Screen.drawHLine(x1, x2, y1);
+
+        }else{
+
+            if(dx = 0){
+
+                //draw vertical line from y1 to y2
+                do Screen.drawVLine(x1, y1, y2);
+            
+            }else{
+
+                //draw diagonal line 
+                let adyMinusbdx = 0;
+
+                if(y1 < y2){
+
+                    let a = 0;
+                    let b = 0;
+
+                    //x++,y++
+                    while(~(a > dx) & ~(b > dy)){
+                        
+                        do Screen.drawPixel(x1 + a, y1 + b);
+                        
+                        if(adyMinusbdx > 0){
+                            let a = a + 1;
+                            let adyMinusbdx = adyMinusbdx - dx;
+                        }else{
+                            let b = b + 1;
+                            let adyMinusbdx = adyMinusbdx + dy;
+                        }
+
+                    }
+                    
+                }else{
+                
+                    //x++,y--
+                    while(~(a > dx) & ~(b < dy)){
+                        
+                        do Screen.drawPixel(x1 + a, y1 - b);
+                        
+                        if(adyMinusbdx > 0){
+                            let a = a + 1;
+                            let adyMinusbdx = adyMinusbdx - dx;
+                        }else{
+                            let b = b + 1;
+                            let adyMinusbdx = adyMinusbdx + dy;
+                        }
+
+                    }
+                }
+
+            }
+
+        }
+        
+        return;
+    }
+
+    //draw horizontal line
+    function void drawHLine(int x1, int x2, int y){
+        var int temp;
+
+        if(x1 > x2){
+            let temp = x1;
+            let x1 = x2;
+            let x2 = temp;
+        }
+
+        while(~(x2 < x1)){
+            do Screen.drawPixel(x1,y);
+            let x1 = x1 + 1;
+        }
+
+        return;
+    }
+
+    //draw vertical line
+    function void drawVLine(int x, int y1, int y2){
+        var int temp;
+
+        if(y1 > y2){
+            let temp = y1;
+            let y1 = y2;
+            let y2 = temp;
+        }
+
+        while(~(y2 < y1)){
+            do Screen.drawPixel(x,y1);
+            let y1 = y1 + 1;
+        }
+
+        return;
+    }
+
+    /** Draws a filled rectangle where the top left corner
+     *  is (x1, y1) and the bottom right corner is (x2, y2). */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+
+        while( ~(y1 > y2) ) {
+            do Screen.drawHLine(x1, x2, y1);
+            let y1 = y1 + 1;
+        }
+        return;
+    }
+
+    /** Draws a filled circle of radius r around (cx, cy). */
+    function void drawCircle(int cx, int cy, int r) {
+        var int dx, dy;
+        var int r_squared;
+        
+        let dy = -r;
+        let r_squared = r*r;
+        while( ~(dy > r) ) {
+            let dx = Math.sqrt(r_squared-(dy*dy));
+            do Screen.drawHLine( cx-dx, cx+dx, cy+dy );
+            let dy = dy + 1;
+        }
+        return;
+    }
+}

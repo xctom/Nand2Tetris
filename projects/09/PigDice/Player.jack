@@ -1,0 +1,46 @@
+/**
+Object for player
+*/
+class Player{
+	field int score;
+	field Random random;
+
+	constructor Player new(){
+		let random = Random.new(0);
+		let score = 0;
+
+		return this;
+	}	
+
+	method int roll() {
+		var int num;
+
+		let num = random.randRange(5) + 1;
+
+		if(num = 1){
+			let score = 0;
+		}
+
+		if(~(num = 1)){
+			let score = score + num;
+		}
+
+		return num;
+	}
+
+	method int getScore(){
+		return score;
+	}
+
+	method void changeRandom(int c){
+
+		do random.addCallTime(c);
+		return;
+	}
+
+	method void dispose(){
+		do random.dispose();
+		do Memory.deAlloc(this);
+		return;
+	}
+}

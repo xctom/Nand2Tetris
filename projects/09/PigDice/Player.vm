@@ -1,0 +1,68 @@
+function Player.new 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push constant 0
+call Random.new 1
+pop this 1
+push constant 0
+pop this 0
+push pointer 0
+return
+function Player.roll 1
+push argument 0
+pop pointer 0
+push this 1
+push constant 5
+call Random.randRange 2
+push constant 1
+add
+pop local 0
+push local 0
+push constant 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+pop this 0
+label IF_FALSE0
+push local 0
+push constant 1
+eq
+not
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 0
+push local 0
+add
+pop this 0
+label IF_FALSE1
+push local 0
+return
+function Player.getScore 0
+push argument 0
+pop pointer 0
+push this 0
+return
+function Player.changeRandom 0
+push argument 0
+pop pointer 0
+push this 1
+push argument 1
+call Random.addCallTime 2
+pop temp 0
+push constant 0
+return
+function Player.dispose 0
+push argument 0
+pop pointer 0
+push this 1
+call Random.dispose 1
+pop temp 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
