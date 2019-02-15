@@ -140,7 +140,7 @@ public class JackTokenizer {
         symbolReg = "[\\&\\*\\+\\(\\)\\.\\/\\,\\-\\]\\;\\~\\}\\|\\{\\>\\=\\[\\<]";
         intReg = "[0-9]+";
         strReg = "\"[^\"\n]*\"";
-        idReg = "[\\w_]+";
+        idReg = "[\\w_][\\w\\d_]*";
 
         tokenPatterns = Pattern.compile(keyWordReg + symbolReg + "|" + intReg + "|" + strReg + "|" + idReg);
     }
